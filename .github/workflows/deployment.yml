@@ -1,28 +1,42 @@
 name: Run Tests
 on: push
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: '3.13'
+
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
   test:
-      runs-on: ubuntu-latest
-      steps:
-          - name: Checkout code
-            uses: actions/checkout@v5.0.0
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
 
-          - name: Set up Python
-            uses: actions/setup-python@v6.0.0
-            with:
-                python-version: '3.13'
+      - name: Set up Python
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: '3.13'
 
-          - name: Install dependencies
-            run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-          - name: Run tests
-            run: pytest
+      - name: Run tests
+        run: pytest
   deploy:
-      runs-on: ubuntu-latest
-      needs: test
-      steps:
-          - name: Checkout code
-            uses: actions/checkout@v5.0.0
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
 
-          - name: Deploy application
-            run: echo "Deploying application..."
+      - name: Deploy application
+        run: echo "Deploying application..."
