@@ -1,0 +1,28 @@
+default_stages: [manual]
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.8
+    hooks:
+      - id: ruff-format
+        name: ruff-format (repo-wide)
+        args: ["."]
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
+
+      - id: ruff
+        name: ruff (repo-wide, fix)
+        args: ["--fix", "--exit-non-zero-on-fix", "."]
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
+
+      - id: ruff-format
+        name: ruff-format (staged)
+        stages: [commit]
+
+      - id: ruff
+        name: ruff (staged, fix)
+        args: ["--fix"]
+        stages: [commit]
