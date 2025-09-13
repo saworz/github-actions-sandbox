@@ -10,8 +10,13 @@ on:
       - '.github/workflows/*'
   workflow_dispatch:
 
+env:
+  WORKFLOW_LEVEL_ENV: workflow
 jobs:
   lint:
+    env:
+      JOB_LEVEL_ENV: lint
+      GITHUB_SECRET: ${{ secrets.MY_SECRET }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
