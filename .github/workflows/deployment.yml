@@ -14,6 +14,7 @@ env:
   WORKFLOW_LEVEL_ENV: workflow
 jobs:
   lint:
+    environment: sample_env
     env:
       JOB_LEVEL_ENV: lint
       GITHUB_SECRET: ${{ secrets.MY_SECRET }}
