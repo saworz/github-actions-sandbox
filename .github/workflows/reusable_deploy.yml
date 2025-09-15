@@ -1,34 +1,42 @@
 name: Reusable Deploy Workflow
 on: 
-    workflow_call:
-        inputs:
-            deploy_parameter:
-                description: 'Some deploy parameter'
-                required: false
-                type: string
-                default: 'default_value'
+  workflow_call:
+    inputs:
+      deploy_parameter:
+        description: 'Some deploy parameter'
+        required: false
+        type: string
+        default: 'default_value'
+    outputs:
+      deploy_output:
+        description: 'Output from deploy job'
+        value: ${{ jobs.deploy.outputs.deploy_output }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v5.0.0
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
 
-        - name: Set up Python  
-          uses: actions/setup-python@v6.0.0
-          with:
-            python-version: '3.13'
-        
-        - name: Cache pip packages
-          id: cache-pip
-          uses: actions/cache@v4.2.4
-          with:
-            path: ~/.local
-            key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
+      - name: Set up Python  
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: '3.13'
+    
+      - name: Cache pip packages
+        id: cache-pip
+        uses: actions/cache@v4.2.4
+        with:
+          path: ~/.local
+          key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
-        - name: Install dependencies
-          if: steps.cache-pip.outputs.cache-hit != 'true'
-          run: pip install --user -r requirements.txt
+      - name: Install dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: pip install --user -r requirements.txt
 
-        - name: Deploy application
-          run: echo "Deploying application with parameter ${{ inputs.deploy_parameter }}..."
+      - name: Deploy application
+        run: echo "Deploying application with parameter ${{ inputs.deploy_parameter }}..."
+
+      - name: Set output
+        id: set_output
+        run: echo "deploy_output=Deployment successful!" >> $GITHUB_OUTPUT

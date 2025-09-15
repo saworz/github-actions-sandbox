@@ -85,6 +85,13 @@ jobs:
     with:
       deploy_parameter: 'production'
     
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Deploy Output
+        run: 'echo "Deploy Output: ${{ needs.deploy.outputs.deploy_output }}"'
+        
   report:
     needs: [test, lint, deploy]
     if: failure()
