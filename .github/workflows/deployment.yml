@@ -97,4 +97,4 @@ jobs:
       - name: Generate Report
         run: |
           echo "Generating report for failed jobs..."
-          echo "${{ github }}"
+          echo "${{ toJSON(github) }}"
