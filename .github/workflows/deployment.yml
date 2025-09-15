@@ -98,9 +98,7 @@ jobs:
         run: pip install --user -r requirements.txt
 
       - name: Deploy application
-        run: |
-          source .venv/bin/activate
-          echo "Deploying application..."
+        run: echo "Deploying application..."
 
   report:
     needs: [test, lint, deploy]
