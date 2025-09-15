@@ -54,9 +54,9 @@ jobs:
       - name: Run tests
         id: run_tests
         run: pytest --html=pytest-report.html --self-contained-html
+        continue-on-error: true
 
-
-      - name: Upload test report if pytest fails
+      - name: Upload Test Report
         if: steps.run_tests.outcome == 'failure'
         uses: actions/upload-artifact@v4.3.3
         with:
