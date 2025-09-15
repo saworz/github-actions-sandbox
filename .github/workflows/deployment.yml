@@ -2,33 +2,41 @@ name: Deployment Pipeline
 on: 
   pull_request:
     types: [opened, reopened]
+
   push:
     branches:
       - main
       - feat/**
     paths-ignore:
       - '.github/workflows/*'
+
   workflow_dispatch:
 
 env:
   WORKFLOW_LEVEL_ENV: workflow
+
 jobs:
   lint:
     environment: sample_env
     env:
       JOB_LEVEL_ENV: lint
       GITHUB_SECRET: ${{ secrets.MY_SECRET }}
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.0
+
       - name: Set up Python
         uses: actions/setup-python@v6.0.0
         with:
           python-version: '3.13'
-      - uses: pre-commit/action@v3.0.1
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
         with:
           extra_args: --all-files
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -40,16 +48,21 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Cache dependencies
+      - name: Cache virtual environment
+        id: cache-venv
         uses: actions/cache@v4.2.4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          path: |
+            .venv
+            ~/.cache/pip
+          key: venv-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+        if: steps.cache-venv.outputs.cache-hit != 'true'
 
       - name: Create reports directory
         run: mkdir -p reports
@@ -72,27 +85,38 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.0
-      - name: Set up Python
+
+      - name: Set up Python  
         uses: actions/setup-python@v6.0.0
         with:
           python-version: '3.13'
       
-      - name: Cache dependencies
+      - name: Cache virtual environment
+        id: cache-venv
         uses: actions/cache@v4.2.4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          path: |
+            .venv
+            ~/.cache/pip
+          key: venv-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+
       - name: Deploy application
-        run: echo "Deploying application..."
+        run: |
+          source .venv/bin/activate
+          echo "Deploying application..."
+
   report:
     needs: [test, lint, deploy]
     if: failure()
     runs-on: ubuntu-latest
+    
     steps:
       - name: Generate Report
         run: |
