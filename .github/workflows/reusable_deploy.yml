@@ -1,5 +1,12 @@
 name: Reusable Deploy Workflow
-on: workflow_call
+on: 
+    workflow_call:
+        inputs:
+            deploy_parameter:
+                description: 'Some deploy parameter'
+                required: false
+                type: string
+                default: 'default_value'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,4 +31,4 @@ jobs:
           run: pip install --user -r requirements.txt
 
         - name: Deploy application
-          run: echo "Deploying application..."
+          run: echo "Deploying application with parameter ${{ inputs.deploy_parameter }}..."
