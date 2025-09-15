@@ -48,21 +48,16 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Cache virtual environment
-        id: cache-venv
+      - name: Cache pip packages
+        id: cache-pip
         uses: actions/cache@v4.2.4
         with:
-          path: |
-            .venv
-            ~/.cache/pip
-          key: venv-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
+          path: ~/.local
+          key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Create and activate virtual environment
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: Install dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: pip install --user -r requirements.txt
 
       - name: Create reports directory
         run: mkdir -p reports
@@ -91,21 +86,16 @@ jobs:
         with:
           python-version: '3.13'
       
-      - name: Cache virtual environment
-        id: cache-venv
+      - name: Cache pip packages
+        id: cache-pip
         uses: actions/cache@v4.2.4
         with:
-          path: |
-            .venv
-            ~/.cache/pip
-          key: venv-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
+          path: ~/.local
+          key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Create and activate virtual environment
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: Install dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: pip install --user -r requirements.txt
 
       - name: Deploy application
         run: |
@@ -116,7 +106,7 @@ jobs:
     needs: [test, lint, deploy]
     if: failure()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Generate Report
         run: |
