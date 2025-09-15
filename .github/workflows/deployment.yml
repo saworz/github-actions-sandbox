@@ -89,3 +89,12 @@ jobs:
         run: pip install -r requirements.txt
       - name: Deploy application
         run: echo "Deploying application..."
+  report:
+    needs: [test, lint, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Report
+        run: |
+          echo "Generating report for failed jobs..."
+          echo "${{ github }}"
