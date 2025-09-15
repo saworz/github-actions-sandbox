@@ -24,3 +24,7 @@ def test_add_numbers_with_string():
 
 def test_add_numbers_floats():
     assert add_numbers(2.5, 3.5) == 6.0
+
+
+def test_broken_example():
+    assert add_numbers(2, 2) == 5  # This test is intentionally broken
