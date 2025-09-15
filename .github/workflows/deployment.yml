@@ -51,16 +51,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Create reports directory
+        run: mkdir -p reports
+
       - name: Run tests
         id: run_tests
-        run: pytest --html=pytest-report.html --self-contained-html
+        run: pytest --html=reports/pytest-report.html --self-contained-html
 
       - name: Upload Test Report
         if: failure() && steps.run_tests.outcome == 'failure'
         uses: actions/upload-artifact@v4.3.3
         with:
           name: test-report
-          path: ./pytest-report.html
+          path: reports/pytest-report.html
+          if-no-files-found: error
           
   deploy:
     runs-on: ubuntu-latest
