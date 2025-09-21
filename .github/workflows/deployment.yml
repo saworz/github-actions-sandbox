@@ -53,16 +53,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache pip packages
-        id: cache-pip
-        uses: actions/cache@v4.2.4
-        with:
-          path: ~/.local
-          key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
-
-      - name: Install dependencies
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --user -r requirements.txt
+      - name: Get and cache dependencies
+        uses: ./.github/actions/cached_deps
 
       - name: Create reports directory
         run: mkdir -p reports
