@@ -7,7 +7,7 @@ inputs:
     type: boolean
     default: true
   outputs:
-    used_cahe:
+    used_cache:
       description: 'Whether the cache was used'
       value: ${{ steps.install-deps.outputs.cache_used }}
 runs:
