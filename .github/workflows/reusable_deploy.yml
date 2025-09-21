@@ -26,7 +26,11 @@ jobs:
           python-version: '3.13'
           
       - name: Get and cache dependencies
+        id: get_deps
         uses: ./.github/actions/cached_deps
+
+      - name: Action output
+        run: echo "Cache used - ${{ steps.get_deps.outputs.used_cache }}"
 
       - name: Deploy application
         run: echo "Deploying application with parameter ${{ inputs.deploy_parameter }}..."

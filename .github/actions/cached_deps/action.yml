@@ -1,9 +1,20 @@
 name: 'Get and cache dependencies'
 description: 'An action to get and cache dependencies'
+inputs:
+  caching:
+    description: 'Whether to cache dependencies'
+    required: false
+    type: boolean
+    default: true
+outputs:
+  used_cache:
+    description: 'Whether the cache was used'
+    value: ${{ steps.install-deps.outputs.cache_used }}
 runs:
   using: 'composite'
   steps:
       - name: Cache pip packages
+        if: inputs.caching == true
         id: cache-pip
         uses: actions/cache@v4.2.4
         with:
@@ -11,6 +22,9 @@ runs:
           key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
 
       - name: Install dependencies
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --user -r requirements.txt
+        id: install-deps
+        if: steps.cache-pip.outputs.cache-hit != 'true' || inputs.caching == false
+        run: |
+          pip install --user -r requirements.txt
+          echo "cache_used='${{ inputs.caching }}'" >> $GITHUB_OUTPUT
         shell: bash
