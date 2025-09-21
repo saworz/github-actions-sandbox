@@ -1,0 +1,44 @@
+name: Deployment Tests Pipeline
+on: 
+  pull_request:
+    types: [opened, reopened]
+
+  push:
+    branches:
+      - main
+      - feat/**
+    paths-ignore:
+      - '.github/workflows/*'
+
+  workflow_dispatch:
+
+env:
+  WORKFLOW_LEVEL_ENV: workflow
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.13-slim
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
+
+      - name: Install dependencies
+        run: pip install  -r requirements.txt
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run tests
+        id: run_tests
+        run: pytest --html=reports/pytest-report.html --self-contained-html
+
+      - name: Upload Test Report
+        if: failure() && steps.run_tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: test-report
+          path: reports/pytest-report.html
+          if-no-files-found: error
+          

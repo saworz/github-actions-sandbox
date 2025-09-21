@@ -1,0 +1,16 @@
+name: 'Get and cache dependencies'
+description: 'An action to get and cache dependencies'
+runs:
+  using: 'composite'
+  steps:
+      - name: Cache pip packages
+        id: cache-pip
+        uses: actions/cache@v4.2.4
+        with:
+          path: ~/.local
+          key: pip-${{ runner.os }}-py3.13-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Install dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: pip install --user -r requirements.txt
+        shell: bash
